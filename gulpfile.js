@@ -105,25 +105,29 @@ gulp.task('publish', function(cb){
 
 
 function sp(cmd, cb){
-  var command = spawn('cmd.exe', ['/s', '/c', '"' + cmd + '"'], { windowsVerbatimArguments: true })
-    , stderr, err;
+  var child = spawn('cmd.exe', ['/s', '/c', '"' + cmd + '"'], { windowsVerbatimArguments: true })
+    , stderr, err, exited;
 
-  command.stdout.on('data', function (data) {
+  child.stdout.on('data', function (data) {
     process.stdout.write(data.toString('utf8'))
   });
 
-  command.stderr.on('data', function (data) {
+  child.stderr.on('data', function (data) {
     stderr += data.toString('utf8')
     process.stdout.write(data.toString('utf8'))
   });
 
-  command.on('exit', onExit)
-  command.on('error', function (error) {
+  child.on('close', onExit)
+  child.on('error', function (error) {
     err = error
+    child.stdout.destroy();
+    child.stderr.destroy();
     onExit()
   });
 
   function onExit(code) {
+    if (exited) return;
+    exited = true;
     if ( code === 0 ) cb(null)
     else if (!err) err = new Error('Command failed: ' + cmd + '\n' + stderr)
     cb(err)
