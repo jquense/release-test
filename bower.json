@@ -1,0 +1,10 @@
+{
+  "name": "release-test",
+  "version": "0.5.0",
+  "main": "dist/react-widgets.js",
+  "description": "A set of input widgets for React",
+  "homepage": "http://jquense.github.io/react-widgets/docs",
+  "authors": [
+    "Jason Quense"
+  ]
+}
